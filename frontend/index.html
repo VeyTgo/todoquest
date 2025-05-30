@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unemployment's Quest - Edisi Himmel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --himmel-blue-darkest: #1a2c4e;
+            --himmel-blue-darker: #2a4065;
+            --himmel-blue-dark: #3b5998;
+            --himmel-blue-medium-dark: #4a69a5;
+            --himmel-blue-primary: #70a1ff;
+            --himmel-blue-lighter: #a3c1ff;
+            --himmel-blue-lightest: #e0e8ff;
+            --text-color-light: #f0f8ff; 
+            --text-color-dim: #c0d8ff;
+            --pixel-font: 'Press Start 2P', cursive;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--himmel-blue-darkest); 
+            background-image: url('https://i.imgur.com/jKpfaLW.jpeg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            color: var(--text-color-light); 
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                135deg, 
+                rgba(26, 44, 78, 0.98) 0%, 
+                rgba(26, 44, 78, 0.90) 25%,
+                rgba(42, 64, 101, 0.80) 60%, 
+                rgba(74, 105, 165, 0.70) 100% 
+            );
+            z-index: -1;
+        }
+
+        .font-pixel {
+            font-family: var(--pixel-font);
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        .top-header {
+            background-color: var(--himmel-blue-dark); 
+            padding: 0.75rem 1.5rem; 
+            position: relative;
+            z-index: 20;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .logo-text {
+            font-size: 1.1rem; 
+            font-weight: normal; 
+            color: white;
+        }
+        
+        .capsule-button-modern {
+            background-color: var(--himmel-blue-primary); 
+            color: white;
+            border-radius: 9999px;
+            padding: 0.6rem 1.35rem; 
+            font-size: 0.875rem; 
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid transparent;
+            line-height: 1.25rem; 
+            cursor: pointer;
+        }
+        .capsule-button-modern:hover {
+            background-color: #547fcc; 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .capsule-button-modern:disabled {
+            background-color: var(--himmel-blue-medium-dark);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .capsule-button-secondary {
+            background-color: transparent;
+            color: var(--himmel-blue-lighter); 
+            border: 1px solid var(--himmel-blue-primary);
+        }
+        .capsule-button-secondary:hover {
+            background-color: rgba(112, 161, 255, 0.15); 
+            color: white;
+        }
+        .capsule-button-danger {
+            background-color: #e53e3e; 
+            color: white;
+        }
+        .capsule-button-danger:hover {
+            background-color: #c53030; 
+        }
+
+
+        .quest-card {
+            background-color: rgba(30, 49, 82, 0.95); 
+            border-radius: 0.5rem; 
+            padding: 1.25rem; 
+            border: 1px solid var(--himmel-blue-medium-dark); 
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3); 
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+        }
+        .quest-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+        }
+        .quest-card-content {
+            flex-grow: 1; 
+        }
+        .quest-card-actions {
+            margin-top: 0.75rem; 
+            display: flex;
+            justify-content: flex-end; 
+            gap: 0.5rem; 
+        }
+
+        .quest-card-icon-wrapper { 
+            width: 36px; 
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem; 
+            background-color: rgba(112, 161, 255, 0.25); 
+            border-radius: 0.375rem; 
+        }
+        .quest-card-icon-wrapper i {
+            font-size: 1rem; 
+            color: var(--himmel-blue-lighter); 
+        }
+        .quest-card h4 { 
+             font-size: 0.9rem; 
+             line-height: 1.3;
+        }
+        
+        .modal { 
+            background-color: rgba(20, 33, 61, 0.92); 
+        }
+        .modal-content {
+            background-color: var(--himmel-blue-darker); 
+            border: 1px solid var(--himmel-blue-medium-dark);
+            color: var(--text-color-light);
+            border-radius: 0.5rem; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6); 
+        }
+        .modal-title { 
+            font-size: 1rem; 
+            font-weight: normal;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; } 
+        ::-webkit-scrollbar-thumb { background-color: rgba(74, 105, 165, 0.6); border-radius: 3px; } 
+        ::-webkit-scrollbar-thumb:hover { background-color: rgba(112, 161, 255, 0.8); } 
+        body { scrollbar-width: thin; scrollbar-color: rgba(74, 105, 165, 0.6) transparent; }
+
+        .quest-type-nav-card { 
+            background-color: rgba(42, 64, 101, 0.9); 
+            border: 1px solid var(--himmel-blue-medium-dark);
+            border-radius: 0.5rem; 
+            padding: 0.75rem 1rem; 
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            color: var(--text-color-dim);
+            display: flex;
+            align-items: center;
+            flex-grow: 1; 
+            justify-content: center; 
+        }
+        .quest-type-nav-card:hover, .quest-type-nav-card.active {
+            background-color: var(--himmel-blue-primary); 
+            color: white;
+            border-color: var(--himmel-blue-lighter); 
+            transform: translateY(-2px) scale(1.02); 
+            box-shadow: 0 4px 10px rgba(112, 161, 255, 0.4); 
+        }
+        .quest-type-nav-card i {
+            margin-right: 0.75rem;
+            font-size: 1.125rem; 
+        }
+
+        .streak-balls-container {
+            display: flex;
+            justify-content: center; 
+            gap: 0.5rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .streak-ball {
+            width: 18px; 
+            height: 18px;
+            border-radius: 50%;
+            background-color: rgba(74, 105, 165, 0.4); 
+            border: 1px solid var(--himmel-blue-primary);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .streak-ball.filled { 
+            background-color: #00c9ff; 
+            box-shadow: 0 0 6px #00c9ff, 0 0 9px #67e3ff;
+        }
+        .streak-number {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            color: var(--text-color-light);
+        }
+        .streak-text {
+            font-size: 0.75rem; 
+            color: var(--himmel-blue-lighter);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .main-content-wrapper {
+            padding: 1.5rem; 
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+         @media (min-width: 768px) { 
+            .main-content-wrapper {
+                padding: 2rem; 
+            }
+        }
+
+        .profile-pic {
+            width: 70px; 
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--himmel-blue-primary);
+            box-shadow: 0 0 10px rgba(112, 161, 255, 0.5); 
+            cursor: pointer;
+        }
+        .xp-bar-container { 
+            height: 0.5rem; 
+            background-color: rgba(74, 105, 165, 0.4); 
+            border: 1px solid var(--himmel-blue-primary); 
+            width: 100px; 
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .xp-bar { 
+            background-color: var(--himmel-blue-lighter); 
+            transition: width 0.5s ease-in-out;
+            height: 100%;
+            border-radius: 9999px;
+        }
+        .profile-modal-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--himmel-blue-lighter); 
+            margin-bottom: 1rem;
+        }
+        
+        .player-info-section .username { 
+            font-size: 1.1rem; 
+            line-height: 1.3; 
+            word-break: break-word; 
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+             border-bottom: 1px dashed transparent;
+        }
+        .player-info-section .username:hover {
+            border-bottom-color: var(--himmel-blue-lighter);
+        }
+        .player-info-section .username-edit-input {
+            font-size: 1.1rem;
+            background-color: rgba(26, 44, 78, 0.8); /* Slightly darker than other inputs */
+            border: 1px solid var(--himmel-blue-primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            width: 100%;
+        }
+        .player-info-section .user-id { 
+            font-size: 0.7rem;
+            color: var(--text-color-dim);
+            line-height: 1.2;
+            word-break: break-all; 
+            margin-top: 0.1rem;
+        }
+         .player-info-section .user-bio { 
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+            line-height: 1.4;
+            margin-top: 0.3rem;
+            min-height: 2.8em; 
+            cursor: pointer;
+            border-bottom: 1px dashed transparent;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .player-info-section .user-bio:hover {
+            border-bottom-color: var(--himmel-blue-lighter);
+        }
+        .player-info-section .bio-edit-input { /* Textarea for bio */
+            font-size: 0.8rem;
+            background-color: rgba(26, 44, 78, 0.8); 
+            border: 1px solid var(--himmel-blue-primary);
+            color: white;
+            padding: 0.375rem 0.5rem;
+            border-radius: 0.25rem;
+            width: 100%;
+            margin-top: 0.3rem;
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .level-text { 
+            font-size: 0.8rem; 
+        }
+        #currentQuestTypeTitle { 
+            font-size: 1.3rem; 
+            margin-top: 1.5rem; 
+            margin-bottom: 1rem;
+        }
+        .quest-list-container {
+             max-height: calc(100vh - 430px); /* Adjusted for potentially taller profile section */
+             overflow-y: auto;
+             display: grid;
+             gap: 1rem; 
+        }
+        @media (min-width: 640px) { 
+            .quest-list-container { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        }
+        @media (min-width: 768px) { 
+            .quest-list-container { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) { 
+             .quest-list-container { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
+
+        .time-display {
+            font-size: 0.8rem;
+            color: var(--text-color-dim);
+            background-color: rgba(42, 64, 101, 0.5); 
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--himmel-blue-medium-dark);
+            margin-top: 0.5rem; 
+        }
+        .action-button { 
+            padding: 0.375rem 0.6rem; 
+            border-radius: 0.375rem; 
+            transition: background-color 0.2s, color 0.2s;
+            font-size: 0.8rem; 
+            line-height: 1; 
+            background-color: rgba(112, 161, 255, 0.2);
+            color: var(--himmel-blue-lighter);
+            border: 1px solid rgba(112, 161, 255, 0.4);
+        }
+        .action-button:hover {
+            background-color: rgba(112, 161, 255, 0.4);
+            color: white;
+        }
+        .action-button.complete {
+             background-color: rgba(74, 105, 165, 0.7); /* var(--himmel-blue-medium-dark) with more opacity */
+             color: white;
+        }
+         .action-button.complete:hover {
+             background-color: var(--himmel-blue-primary);
+        }
+        .action-button.delete {
+            background-color: rgba(229, 62, 62, 0.2); 
+            color: #f56565; 
+            border-color: rgba(229, 62, 62, 0.4);
+        }
+        .action-button.delete:hover {
+            background-color: rgba(229, 62, 62, 0.4);
+            color: white;
+        }
+        .action-button i {
+            margin: 0; 
+        }
+        .empty-quest-gif { 
+            width: 100px; 
+            height: 100px; 
+            margin: 0 auto 0.75rem auto; 
+            opacity: 0.8; 
+            border-radius: 0.25rem; 
+        }
+        /* Input field styling for profile pic URL */
+        .url-input-profile {
+            font-size: 0.875rem;
+            color: var(--text-color-light);
+            background-color: rgba(59, 89, 152, 0.8);
+            border: 1px solid var(--himmel-blue-dark);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            width: 100%;
+            box-shadow: sm;
+        }
+        .url-input-profile:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: var(--himmel-blue-primary);
+            border-color: var(--himmel-blue-primary);
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="top-header flex items-center justify-between">
+        <h1 class="logo-text font-pixel">Unemployment's Quest</h1>
+        <div class="flex items-center space-x-3">
+            <button id="loginBtn" class="capsule-button-modern capsule-button-secondary">Login</button>
+            <button id="logoutBtn" class="capsule-button-modern capsule-button-secondary hidden">Logout</button>
+            <button id="openAddQuestModalBtn" class="capsule-button-modern hidden">
+                <i class="fas fa-plus mr-2 text-xs"></i>Add Quest 
+            </button>
+        </div>
+    </header>
+
+    <hr class="border-t border-white opacity-20 w-full">
+
+    <main class="main-content-wrapper flex-1 overflow-y-auto">
+        
+        <section class="mb-6 p-4 rounded-lg" style="background-color: rgba(30, 49, 82, 0.6);">
+            <div class="flex flex-col md:flex-row items-center md:items-start md:space-x-6 space-y-4 md:space-y-0">
+                <div class="flex-shrink-0 text-center">
+                    <img id="playerProfilePic" src="https://placehold.co/100x100/4a69a5/e0e8ff?text=P" alt="Foto Profil" class="profile-pic mx-auto mb-2">
+                    <p class="text-white font-pixel level-text">Level: <span id="playerLevel">1</span></p>
+                    <div class="mt-1 w-full max-w-[100px] mx-auto">
+                        <div id="xpBarContainer" class="xp-bar-container">
+                            <div id="xpBar" class="xp-bar" style="width: 0%;"></div>
+                        </div>
+                        <p id="xpText" class="text-xs text-slate-300 mt-0.5">0/100 XP</p>
+                    </div>
+                </div>
+
+                <div class="flex-grow text-center md:text-left player-info-section">
+                    <div id="usernameContainer">
+                        <h3 id="playerUsername" class="username font-pixel">Nama Pengguna</h3>
+                    </div>
+                    <input type="text" id="usernameEditInput" class="username-edit-input font-pixel hidden w-full" placeholder="Username baru...">
+                    <button id="saveUsernameBtn" class="capsule-button-modern capsule-button-secondary text-xs py-1 px-2 mt-1 hidden">Simpan Username</button>
+                    
+                    <p id="playerCustomId" class="user-id">Player ID: -</p>
+                    <div id="bioContainer">
+                        <p id="playerBio" class="user-bio">Klik untuk edit bio...</p>
+                    </div>
+                    <textarea id="bioEditInput" class="bio-edit-input hidden w-full" placeholder="Masukkan bio baru..."></textarea>
+                    <button id="saveBioBtn" class="capsule-button-modern capsule-button-secondary text-xs py-1 px-2 mt-1 hidden">Simpan Bio</button>
+                </div>
+
+
+                <div class="flex-shrink-0 text-center">
+                    <div class="p-3 rounded-md" style="background-color: rgba(42, 64, 101, 0.7);">
+                        <h3 class="text-sm font-medium text-[var(--himmel-blue-lighter)] mb-1.5">Streak Harian</h3>
+                        <div class="streak-balls-container mb-1">
+                            </div>
+                        <p>
+                            <span id="totalStreakCount" class="streak-number">0</span>
+                            <span class="streak-text"> Hari</span>
+                        </p>
+                    </div>
+                    <div id="currentTimeDisplay" class="time-display text-center">
+                        Memuat waktu...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="flex flex-col sm:flex-row justify-center items-center gap-3 mb-6">
+            <a href="#" class="quest-type-nav-card w-full sm:w-auto" data-quest-type="daily">
+                <i class="fas fa-leaf text-green-400"></i>
+                <span class="font-medium">Daily Quest</span>
+            </a>
+            <a href="#" class="quest-type-nav-card w-full sm:w-auto" data-quest-type="main">
+                <i class="fas fa-crown text-yellow-400"></i>
+                <span class="font-medium">Main Quest</span>
+            </a>
+            <a href="#" class="quest-type-nav-card w-full sm:w-auto" data-quest-type="side">
+                <i class="fas fa-feather-alt text-sky-400"></i>
+                <span class="font-medium">Side Quest</span>
+            </a>
+        </nav>
+
+        <div>
+            <h3 id="currentQuestTypeTitle" class="text-2xl md:text-3xl font-semibold text-white text-center font-pixel">Pilih Kategori Quest</h3>
+            <div id="questDisplayArea" class="w-full quest-list-container"> 
+                <p class="text-center text-slate-400 italic py-8 col-span-full">Silakan login untuk melihat atau menambah quest.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="loginSignupModal" class="fixed inset-0 modal items-center justify-center p-4 hidden z-50">
+        <div class="modal-content p-6 w-full max-w-md">
+            <h3 id="authModalTitle" class="modal-title mb-6 text-center text-white font-pixel">Login</h3>
+            <form id="authForm" class="space-y-4">
+                <div>
+                    <label for="authUsernameInput" class="block text-sm font-medium text-slate-300 mb-1">Username:</label>
+                    <input type="text" id="authUsernameInput" name="authUsernameInput" required class="text-sm mt-1 block w-full bg-[rgba(59,89,152,0.8)] border border-[var(--himmel-blue-dark)] rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--himmel-blue-primary)] focus:border-[var(--himmel-blue-primary)] text-white placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="authPassword" class="block text-sm font-medium text-slate-300 mb-1">Password:</label>
+                    <input type="password" id="authPassword" name="authPassword" required class="text-sm mt-1 block w-full bg-[rgba(59,89,152,0.8)] border border-[var(--himmel-blue-dark)] rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--himmel-blue-primary)] focus:border-[var(--himmel-blue-primary)] text-white placeholder-slate-400">
+                </div>
+                <p id="authError" class="text-xs text-red-400 text-center"></p>
+                <div class="flex flex-col space-y-3 pt-4">
+                    <button type="submit" id="authSubmitBtn" class="capsule-button-modern w-full">Login</button>
+                    <button type="button" id="switchAuthModeBtn" class="text-sm text-[var(--himmel-blue-lighter)] hover:text-white text-center">Belum punya akun? Sign Up</button>
+                </div>
+                 <button type="button" id="closeAuthModalBtn" class="capsule-button-modern capsule-button-secondary w-full mt-3">Batal</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="profileModal" class="fixed inset-0 modal items-center justify-center p-4 hidden z-50">
+        <div class="modal-content p-6 w-full max-w-sm text-center">
+            <h3 class="modal-title mb-4 text-white font-pixel">Kustomisasi Profil</h3>
+            <img id="profileModalPic" src="https://placehold.co/150x150/4a69a5/e0e8ff?text=P" alt="Foto Profil Besar" class="profile-modal-pic mx-auto">
+            
+            <label for="profilePicUrlInputModal" class="block text-sm font-medium text-slate-300 mb-1 text-left">Link Foto Profil Baru:</label>
+            <input type="url" id="profilePicUrlInputModal" placeholder="https://example.com/gambar.png" class="url-input-profile mb-3">
+            <p id="profilePicError" class="text-xs text-red-400 text-center mb-3"></p>
+            
+            <button id="saveProfilePicBtn" class="capsule-button-modern w-full max-w-xs mx-auto mb-2">Simpan Foto</button>
+            <button id="closeProfileModalBtn" class="capsule-button-modern capsule-button-secondary w-full max-w-xs mx-auto">Tutup</button>
+        </div>
+    </div>
+
+    <div id="addQuestModal" class="fixed inset-0 modal items-center justify-center p-4 hidden z-50">
+        <div class="modal-content p-6 w-full max-w-lg">
+            <h3 class="modal-title mb-6 text-center text-white font-pixel">Tambah Quest Baru</h3>
+            <form id="questForm" class="space-y-4">
+                <div>
+                    <label for="questName" class="block text-sm font-medium text-slate-300 mb-1">Nama Quest:</label>
+                    <input type="text" id="questName" name="questName" required class="text-sm mt-1 block w-full bg-[rgba(59,89,152,0.8)] border border-[var(--himmel-blue-dark)] rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--himmel-blue-primary)] focus:border-[var(--himmel-blue-primary)] text-white placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="questXp" class="block text-sm font-medium text-slate-300 mb-1">XP:</label>
+                    <input type="number" id="questXp" name="questXp" min="1" required class="text-sm mt-1 block w-full bg-[rgba(59,89,152,0.8)] border border-[var(--himmel-blue-dark)] rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--himmel-blue-primary)] focus:border-[var(--himmel-blue-primary)] text-white placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="questTypeModal" class="block text-sm font-medium text-slate-300 mb-1">Tipe Quest:</label>
+                    <select id="questTypeModal" name="questTypeModal" class="text-sm mt-1 block w-full bg-[rgba(59,89,152,0.8)] border border-[var(--himmel-blue-dark)] rounded-md shadow-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--himmel-blue-primary)] focus:border-[var(--himmel-blue-primary)] text-white">
+                        <option value="daily">Daily</option>
+                        <option value="main">Main</option>
+                        <option value="side">Side</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="closeAddQuestModalBtn" class="capsule-button-modern capsule-button-secondary">Batal</button>
+                    <button type="submit" class="capsule-button-modern">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="completionModal" class="fixed inset-0 modal items-center justify-center p-4 hidden z-50">
+        <div class="modal-content p-6 w-full max-w-md text-center">
+            <div class="text-5xl mb-4 modal-icon"> <i class="fas fa-trophy text-yellow-400"></i> </div>
+            <h3 class="modal-title mb-3 font-pixel" id="completionModalTitle">Quest Selesai!</h3>
+            <p id="completionMessage" class="text-slate-300 mb-6 text-sm">Selamat! Anda telah menyelesaikan quest.</p>
+            <button id="closeCompletionModalButton" class="capsule-button-modern w-full">
+                Lanjutkan!
+            </button>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="fixed inset-0 modal items-center justify-center p-4 hidden z-50">
+        <div class="modal-content p-6 w-full max-w-sm text-center">
+            <h3 class="modal-title mb-4 text-white font-pixel">Konfirmasi Hapus</h3>
+            <p id="deleteConfirmMessage" class="text-slate-300 mb-6 text-sm">Anda yakin ingin menghapus quest "<span id="questNameToDelete" class="font-semibold"></span>"? Tindakan ini tidak dapat diurungkan.</p>
+            <div class="flex justify-center space-x-3">
+                <button id="cancelDeleteBtn" class="capsule-button-modern capsule-button-secondary">Batal</button>
+                <button id="confirmDeleteBtn" class="capsule-button-modern capsule-button-danger">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Konfigurasi API Backend
+        const API_BASE_URL = 'http://localhost:3001/api'; // Ganti jika backend Anda di-deploy di tempat lain
+
+        // State Aplikasi (Lokal)
+        let localPlayerState = { 
+            _id: null,
+            xp: 0, 
+            level: 1, 
+            dailyStreak: 0, 
+            lastStreakUpdateDate: null, 
+            daysCompletedThisCycle: 0, 
+            displayName: "Guest", 
+            profilePicture: null,
+            bio: "Klik untuk edit bio...",
+            customPlayerId: null 
+        };
+        let allQuests = []; 
+        let currentQuestFilter = "daily"; 
+        const XP_PER_LEVEL = 100;
+        let currentJakartaDate = null; 
+        const timeApiUrl = "https://timeapi.io/api/time/current/zone?timeZone=Asia%2FJakarta";
+        let accessToken = localStorage.getItem('accessToken'); // Ambil token dari localStorage
+
+        // DOM Elements (sama seperti sebelumnya, pastikan semua ID sesuai)
+        const playerUsernameEl = document.getElementById('playerUsername');
+        const usernameContainerEl = document.getElementById('usernameContainer');
+        const usernameEditInputEl = document.getElementById('usernameEditInput');
+        const saveUsernameBtnEl = document.getElementById('saveUsernameBtn');
+        const playerCustomIdEl = document.getElementById('playerCustomId'); 
+        const playerBioEl = document.getElementById('playerBio');
+        const bioContainerEl = document.getElementById('bioContainer');
+        const bioEditInputEl = document.getElementById('bioEditInput');
+        const saveBioBtnEl = document.getElementById('saveBioBtn');
+
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginSignupModal = document.getElementById('loginSignupModal');
+        const authModalTitle = document.getElementById('authModalTitle');
+        const authForm = document.getElementById('authForm');
+        const authUsernameInputEl = document.getElementById('authUsernameInput'); 
+        const authPasswordInput = document.getElementById('authPassword');
+        const authErrorEl = document.getElementById('authError');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const switchAuthModeBtn = document.getElementById('switchAuthModeBtn');
+        const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
+        let isLoginMode = true;
+
+        const currentQuestTypeTitleEl = document.getElementById('currentQuestTypeTitle');
+        const streakBallsContainer = document.querySelector('.streak-balls-container');
+        const totalStreakCountEl = document.getElementById('totalStreakCount');
+        const playerProfilePicEl = document.getElementById('playerProfilePic');
+        const playerLevelEl = document.getElementById('playerLevel'); 
+        const xpBarEl = document.getElementById('xpBar'); 
+        const xpTextEl = document.getElementById('xpText'); 
+        const currentTimeDisplayEl = document.getElementById('currentTimeDisplay'); 
+        
+        const questForm = document.getElementById('questForm');
+        const questNameInput = document.getElementById('questName');
+        const questXpInput = document.getElementById('questXp');
+        const questTypeModalInput = document.getElementById('questTypeModal');
+        const questDisplayArea = document.getElementById('questDisplayArea');
+
+        const addQuestModal = document.getElementById('addQuestModal');
+        const openAddQuestModalBtn = document.getElementById('openAddQuestModalBtn');
+        const closeAddQuestModalBtn = document.getElementById('closeAddQuestModalBtn');
+        
+        const completionModal = document.getElementById('completionModal'); 
+        const completionModalTitleEl = document.getElementById('completionModalTitle');
+        const completionMessageEl = document.getElementById('completionMessage'); 
+        const completionModalIconEl = completionModal.querySelector('.modal-icon i');
+        const closeCompletionModalButton = document.getElementById('closeCompletionModalButton');
+
+        const profileModalEl = document.getElementById('profileModal');
+        const profileModalPicEl = document.getElementById('profileModalPic');
+        const profilePicUrlInputModalEl = document.getElementById('profilePicUrlInputModal'); // Input URL
+        const saveProfilePicBtnEl = document.getElementById('saveProfilePicBtn');
+        const profilePicErrorEl = document.getElementById('profilePicError');
+        const closeProfileModalBtnEl = document.getElementById('closeProfileModalBtn');
+
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const questNameToDeleteEl = document.getElementById('questNameToDelete');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        let questIdToDelete = null;
+
+        // Tone.js (sama seperti sebelumnya)
+        const synth = new Tone.Synth({
+            oscillator: { type: "sine" }, 
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.5 }
+        }).toDestination();
+        const playSound = (note, duration = "8n", timeOffset = 0) => {
+            if (Tone.context.state !== 'running') {
+                Tone.start().then(() => {
+                    synth.triggerAttackRelease(note, duration, Tone.now() + timeOffset);
+                }).catch(e => console.error("Error starting Tone.js context:", e));
+            } else {
+                synth.triggerAttackRelease(note, duration, Tone.now() + timeOffset);
+            }
+        };
+        const successSound = () => { playSound("E5"); playSound("G5", "8n", 0.1); };
+        const levelUpSound = () => { playSound("C4"); playSound("E4", "8n", 0.15); playSound("G4", "4n", 0.3); playSound("C5", "2n", 0.5);};
+        const uncheckSound = () => { playSound("C3"); playSound("A2", "8n", 0.1);}; 
+        const deleteSound = () => { playSound("A3", "4n"); playSound("F3", "4n", 0.15);}; 
+        const openModalSound = () => playSound("C4", "16n");
+        const closeModalSound = () => playSound("A3", "16n");
+        const errorSound = () => { playSound("F#3", "8n"); playSound("F3", "8n", 0.1); };
+
+
+        // --- Fungsi Helper untuk API Call ---
+        async function fetchAPI(endpoint, method = 'GET', body = null) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (accessToken) {
+                headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+            const config = { method, headers };
+            if (body) {
+                config.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                const data = await response.json(); // Selalu coba parse JSON
+                if (!response.ok) {
+                    // Coba ambil message dari data error, atau default ke statusText
+                    const errorMessage = data.message || response.statusText || `Error ${response.status}`;
+                    console.error(`API Error (${response.status}) on ${method} ${endpoint}:`, errorMessage, data);
+                    throw new Error(errorMessage);
+                }
+                return data;
+            } catch (error) {
+                console.error(`Network or parsing error on ${method} ${endpoint}:`, error);
+                // Jika error adalah instance dari Error, kita re-throw. Jika tidak (misal string), buat Error baru.
+                if (error instanceof Error) {
+                    throw error;
+                } else {
+                    throw new Error(String(error.message || error || 'Request failed'));
+                }
+            }
+        }
+
+        // --- AUTHENTICATION ---
+        function toggleAuthModal(show, toLoginMode = true) {
+            if (show) {
+                isLoginMode = toLoginMode;
+                authModalTitle.textContent = isLoginMode ? "Login" : "Sign Up";
+                authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+                switchAuthModeBtn.textContent = isLoginMode ? "Belum punya akun? Sign Up" : "Sudah punya akun? Login";
+                authErrorEl.textContent = "";
+                authForm.reset(); 
+                loginSignupModal.classList.remove('hidden');
+                loginSignupModal.classList.add('flex');
+                openModalSound();
+            } else {
+                loginSignupModal.classList.add('hidden');
+                loginSignupModal.classList.remove('flex');
+                authErrorEl.textContent = ""; 
+                closeModalSound();
+            }
+        }
+
+        loginBtn.addEventListener('click', () => toggleAuthModal(true, true));
+        closeAuthModalBtn.addEventListener('click', () => toggleAuthModal(false));
+        switchAuthModeBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode; // Toggle mode
+            authModalTitle.textContent = isLoginMode ? "Login" : "Sign Up";
+            authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+            switchAuthModeBtn.textContent = isLoginMode ? "Belum punya akun? Sign Up" : "Sudah punya akun? Login";
+            authErrorEl.textContent = "";
+            authForm.reset();
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            authErrorEl.textContent = "";
+            authSubmitBtn.disabled = true;
+            authSubmitBtn.textContent = isLoginMode ? "Logging in..." : "Signing up...";
+
+            const username = authUsernameInputEl.value.trim();
+            const password = authPasswordInput.value;
+
+            if (!username || !password) {
+                authErrorEl.textContent = "Username dan password harus diisi.";
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+                errorSound();
+                return;
+            }
+
+            const endpoint = isLoginMode ? '/auth/login' : '/auth/signup';
+            try {
+                const data = await fetchAPI(endpoint, 'POST', { username, password });
+                accessToken = data.accessToken;
+                localStorage.setItem('accessToken', accessToken);
+                // Backend sekarang mengembalikan data user yang sudah difilter
+                updateLocalPlayerState(data.user); 
+                await initializeUserSession();
+                toggleAuthModal(false);
+                successSound();
+            } catch (error) {
+                authErrorEl.textContent = error.message || "Terjadi kesalahan.";
+                errorSound();
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            accessToken = null;
+            localStorage.removeItem('accessToken');
+            resetUIForLogout();
+            playSound("A3", "8n");
+        });
+
+        // --- USER PROFILE & STATE ---
+        function updateLocalPlayerState(userDataFromServer) {
+            if (userDataFromServer) {
+                localPlayerState = { ...localPlayerState, ...userDataFromServer };
+            }
+            updatePlayerUI();
+        }
+        
+        async function initializeUserSession() {
+            if (!accessToken) {
+                resetUIForLogout();
+                return;
+            }
+            try {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                openAddQuestModalBtn.classList.remove('hidden');
+
+                const userStateData = await fetchAPI('/user/state');
+                updateLocalPlayerState(userStateData);
+                await fetchQuests(); // Muat quest setelah state user dimuat
+                await fetchCurrentTimeAndTriggerDailyResetIfNeeded(); // Panggil setelah login
+            } catch (error) {
+                console.error("Gagal inisialisasi sesi user:", error.message);
+                if (error.message.includes("401") || error.message.includes("403")) { // Token tidak valid/kedaluwarsa
+                    accessToken = null;
+                    localStorage.removeItem('accessToken');
+                    resetUIForLogout();
+                    showCompletionModal("Sesi Anda telah berakhir. Silakan login kembali.", false, "fa-exclamation-triangle text-orange-400", "Sesi Berakhir");
+                } else {
+                    showCompletionModal(`Error: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                }
+            }
+        }
+        
+        function resetUIForLogout() {
+            localPlayerState = { _id: null, xp: 0, level: 1, dailyStreak: 0, lastStreakUpdateDate: null, daysCompletedThisCycle: 0, displayName: "Guest", profilePicture: null, bio: "Klik untuk edit bio...", customPlayerId: null };
+            allQuests = [];
+            updatePlayerUI();
+            renderQuests(); // Tampilkan pesan "login untuk melihat quest"
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            openAddQuestModalBtn.classList.add('hidden');
+            currentQuestTypeTitleEl.textContent = "Pilih Kategori Quest";
+        }
+
+        // Edit Username
+        playerUsernameEl.addEventListener('click', () => {
+            if (!accessToken) return;
+            usernameContainerEl.classList.add('hidden');
+            usernameEditInputEl.value = localPlayerState.displayName === "Guest" ? "" : localPlayerState.displayName;
+            usernameEditInputEl.classList.remove('hidden');
+            saveUsernameBtnEl.classList.remove('hidden');
+            usernameEditInputEl.focus();
+        });
+        saveUsernameBtnEl.addEventListener('click', async () => {
+            const newDisplayName = usernameEditInputEl.value.trim();
+            if (newDisplayName && newDisplayName !== localPlayerState.displayName) {
+                try {
+                    const data = await fetchAPI('/user/profile', 'PUT', { displayName: newDisplayName });
+                    updateLocalPlayerState(data.user); // Backend mengembalikan user state yang terupdate
+                    successSound();
+                } catch (error) {
+                    showCompletionModal(`Gagal update username: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                    errorSound();
+                }
+            }
+            playerUsernameEl.textContent = localPlayerState.displayName || "Pengguna";
+            usernameEditInputEl.classList.add('hidden');
+            saveUsernameBtnEl.classList.add('hidden');
+            usernameContainerEl.classList.remove('hidden');
+        });
+        usernameEditInputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveUsernameBtnEl.click(); });
+
+        // Edit Bio
+        playerBioEl.addEventListener('click', () => {
+            if (!accessToken) return;
+            bioContainerEl.classList.add('hidden');
+            bioEditInputEl.value = localPlayerState.bio === "Klik untuk edit bio..." ? "" : localPlayerState.bio;
+            bioEditInputEl.classList.remove('hidden');
+            saveBioBtnEl.classList.remove('hidden');
+            bioEditInputEl.focus();
+        });
+        saveBioBtnEl.addEventListener('click', async () => {
+            const newBio = bioEditInputEl.value.trim();
+             try {
+                const data = await fetchAPI('/user/profile', 'PUT', { bio: newBio });
+                updateLocalPlayerState(data.user);
+                successSound();
+            } catch (error) {
+                showCompletionModal(`Gagal update bio: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                errorSound();
+            }
+            playerBioEl.textContent = localPlayerState.bio || "Klik untuk edit bio...";
+            bioEditInputEl.classList.add('hidden');
+            saveBioBtnEl.classList.add('hidden');
+            bioContainerEl.classList.remove('hidden');
+        });
+        // Untuk textarea, Enter biasanya untuk baris baru, jadi tidak ada keypress listener untuk submit
+
+        // Profile Picture Modal
+        playerProfilePicEl.addEventListener('click', () => {
+            if (!accessToken) return;
+            profilePicUrlInputModalEl.value = localPlayerState.profilePicture || "";
+            profileModalPicEl.src = localPlayerState.profilePicture || `https://placehold.co/150x150/4a69a5/e0e8ff?text=${localPlayerState.displayName?.charAt(0).toUpperCase() || 'P'}`;
+            profilePicErrorEl.textContent = "";
+            profileModalEl.classList.remove('hidden');
+            profileModalEl.classList.add('flex');
+            openModalSound();
+        });
+        saveProfilePicBtnEl.addEventListener('click', async () => {
+            const newProfilePicUrl = profilePicUrlInputModalEl.value.trim();
+            profilePicErrorEl.textContent = "";
+            if (!newProfilePicUrl) {
+                profilePicErrorEl.textContent = "Link foto tidak boleh kosong.";
+                errorSound(); return;
+            }
+            try {
+                new URL(newProfilePicUrl); // Basic URL validation
+            } catch (_) {
+                profilePicErrorEl.textContent = "Link foto tidak valid.";
+                errorSound(); return;
+            }
+            try {
+                saveProfilePicBtnEl.disabled = true;
+                saveProfilePicBtnEl.textContent = "Menyimpan...";
+                const data = await fetchAPI('/user/profile', 'PUT', { profilePicture: newProfilePicUrl });
+                updateLocalPlayerState(data.user);
+                profileModalPicEl.src = newProfilePicUrl; // Update modal pic juga
+                successSound();
+                profileModalEl.classList.add('hidden');
+                profileModalEl.classList.remove('flex');
+            } catch (error) {
+                profilePicErrorEl.textContent = `Gagal simpan foto: ${error.message}`;
+                errorSound();
+            } finally {
+                saveProfilePicBtnEl.disabled = false;
+                saveProfilePicBtnEl.textContent = "Simpan Foto";
+            }
+        });
+        closeProfileModalBtnEl.addEventListener('click', () => {
+            profileModalEl.classList.add('hidden');
+            profileModalEl.classList.remove('flex');
+            closeModalSound();
+        });
+
+
+        // --- QUESTS ---
+        async function fetchQuests() {
+            if (!accessToken) {
+                allQuests = [];
+                renderQuests();
+                return;
+            }
+            try {
+                const questsData = await fetchAPI('/quests');
+                allQuests = questsData.sort((a,b) => (a.isCompleted - b.isCompleted) || (new Date(a.createdAt) - new Date(b.createdAt)));
+                renderQuests();
+            } catch (error) {
+                console.error("Gagal mengambil quests:", error);
+                showCompletionModal(`Gagal memuat quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                allQuests = [];
+                renderQuests();
+            }
+        }
+
+        questForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!accessToken) {
+                showCompletionModal("Anda harus login untuk menambah quest.", false, 'fa-exclamation-circle text-orange-400', 'Perhatian');
+                errorSound(); return;
+            }
+            const name = questNameInput.value.trim();
+            const xp = parseInt(questXpInput.value);
+            const type = questTypeModalInput.value;
+
+            if (!name || isNaN(xp) || xp <= 0) {
+                showCompletionModal("Nama quest dan XP valid harus diisi.", false, 'fa-exclamation-circle text-orange-400', 'Input Tidak Valid');
+                errorSound(); return;
+            }
+            
+            const submitButton = questForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = "Menyimpan...";
+
+            try {
+                const newQuestData = await fetchAPI('/quests', 'POST', { name, xp, type });
+                allQuests.push(newQuestData); // Tambah ke list lokal
+                allQuests.sort((a,b) => (a.isCompleted - b.isCompleted) || (new Date(a.createdAt) - new Date(b.createdAt)));
+                renderQuests(); // Re-render
+                successSound();
+                showCompletionModal(`Quest "${name}" berhasil ditambahkan!`, false, 'fa-plus-circle text-green-400', 'Quest Ditambahkan');
+                addQuestModal.classList.add('hidden');
+                addQuestModal.classList.remove('flex');
+                questForm.reset();
+            } catch (error) {
+                showCompletionModal(`Gagal menambah quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                errorSound();
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Simpan";
+            }
+        });
+
+        async function handleToggleCompleteQuest(questId) {
+            const questIndex = allQuests.findIndex(q => q._id === questId);
+            if (questIndex === -1) return;
+            
+            const originalQuest = { ...allQuests[questIndex] }; // Salin untuk rollback jika gagal
+
+            // Optimistic UI update
+            allQuests[questIndex].isCompleted = !allQuests[questIndex].isCompleted;
+            if (allQuests[questIndex].isCompleted) {
+                localPlayerState.xp += allQuests[questIndex].xp;
+            } else {
+                localPlayerState.xp = Math.max(0, localPlayerState.xp - allQuests[questIndex].xp);
+            }
+            // Level up dan streak akan dihandle oleh respons server
+            renderQuests(); 
+            updatePlayerUI(); // Update XP bar secara optimis
+
+            try {
+                const data = await fetchAPI(`/quests/${questId}/toggle`, 'PUT');
+                // Update local state dengan data dari server (terutama user state)
+                allQuests[questIndex] = data.updatedQuest;
+                updateLocalPlayerState(data.updatedUser); // Ini akan update XP, level, streak
+                
+                if (data.updatedQuest.isCompleted) {
+                    successSound();
+                    showCompletionModal(`Quest "${data.updatedQuest.name}" selesai! +${data.updatedQuest.xp} XP.`);
+                    if (data.updatedUser.level > originalQuest.levelBeforeToggle) { // Cek jika level up
+                         levelUpSound();
+                         showCompletionModal(`Selamat! Anda naik ke Level ${data.updatedUser.level}!`, true, 'fa-star text-yellow-300', 'Level Up!');
+                    }
+                } else {
+                    uncheckSound();
+                }
+            } catch (error) {
+                // Rollback optimistic update
+                allQuests[questIndex] = originalQuest;
+                // Perlu cara untuk rollback XP juga, atau re-fetch user state
+                await initializeUserSession(); // Re-fetch state untuk konsistensi
+                showCompletionModal(`Gagal update quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                errorSound();
+            }
+        }
+
+        function handleDeleteQuestPrompt(id, name) {
+            questIdToDelete = id;
+            questNameToDeleteEl.textContent = name;
+            deleteConfirmModal.classList.remove('hidden');
+            deleteConfirmModal.classList.add('flex');
+            openModalSound();
+        }
+
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (!questIdToDelete) return;
+            confirmDeleteBtn.disabled = true;
+            confirmDeleteBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Menghapus...`;
+            try {
+                await fetchAPI(`/quests/${questIdToDelete}`, 'DELETE');
+                allQuests = allQuests.filter(q => q._id !== questIdToDelete);
+                renderQuests();
+                deleteSound();
+                showCompletionModal(`Quest berhasil dihapus!`, false, 'fa-trash-alt text-red-400', 'Quest Dihapus');
+            } catch (error) {
+                showCompletionModal(`Gagal menghapus quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                errorSound();
+            } finally {
+                deleteConfirmModal.classList.add('hidden');
+                deleteConfirmModal.classList.remove('flex');
+                questIdToDelete = null;
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.textContent = 'Hapus';
+            }
+        });
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteConfirmModal.classList.add('hidden');
+            deleteConfirmModal.classList.remove('flex');
+            questIdToDelete = null;
+            closeModalSound();
+        });
+
+
+        // --- UI UPDATES & RENDERING ---
+        function updatePlayerUI() {
+            if (!localPlayerState) return;
+            playerUsernameEl.textContent = localPlayerState.displayName || "Guest";
+            playerCustomIdEl.textContent = localPlayerState.customPlayerId ? `Player ID: ${localPlayerState.customPlayerId}` : (accessToken ? "Player ID: -" : "");
+            playerBioEl.textContent = localPlayerState.bio || (accessToken ? "Klik untuk edit bio..." : "");
+            playerLevelEl.textContent = localPlayerState.level || 1;
+
+            const picInitial = localPlayerState.displayName ? localPlayerState.displayName.charAt(0).toUpperCase() : "G";
+            const placeholderPic = `https://placehold.co/100x100/4a69a5/e0e8ff?text=${picInitial}`;
+            playerProfilePicEl.src = localPlayerState.profilePicture || placeholderPic;
+            profileModalPicEl.src = localPlayerState.profilePicture || `https://placehold.co/150x150/4a69a5/e0e8ff?text=${picInitial}`;
+
+            const currentXP = localPlayerState.xp || 0;
+            const xpPercentage = Math.min((currentXP / XP_PER_LEVEL) * 100, 100);
+            xpBarEl.style.width = `${xpPercentage}%`;
+            xpTextEl.textContent = `${currentXP}/${XP_PER_LEVEL} XP`;
+
+            renderStreakBalls();
+        }
+
+        function renderStreakBalls() {
+            streakBallsContainer.innerHTML = '';
+            const ballsToShow = 7;
+            for (let i = 0; i < ballsToShow; i++) {
+                const ball = document.createElement('div');
+                ball.classList.add('streak-ball');
+                if (localPlayerState.dailyStreak > 0 && i < localPlayerState.daysCompletedThisCycle) {
+                    ball.classList.add('filled');
+                }
+                streakBallsContainer.appendChild(ball);
+            }
+            totalStreakCountEl.textContent = localPlayerState.dailyStreak || 0;
+        }
+        
+        function renderQuests() {
+            if (!accessToken) { // Jika tidak login
+                questDisplayArea.innerHTML = '<p class="text-center text-slate-400 italic py-8 col-span-full">Silakan login untuk melihat atau menambah quest.</p>';
+                return;
+            }
+
+            const filteredQuests = allQuests.filter(q => q.type === currentQuestFilter);
+            // Urutkan: belum selesai dulu, lalu berdasarkan tanggal pembuatan (terbaru dulu)
+            filteredQuests.sort((a, b) => {
+                if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            if (filteredQuests.length === 0) {
+                questDisplayArea.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3NncjNocGZzcXQ0aG5kMHY5dG56aXU2bXNmMHdybDc1bXQxbzFqZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7btZ1Gm7zl30hPz2/giphy.gif" alt="Kosong" class="empty-quest-gif">
+                        <p class="text-slate-400 italic">Tidak ada quest ${currentQuestFilter} saat ini. Tambahkan satu!</p>
+                    </div>`;
+                return;
+            }
+
+            questDisplayArea.innerHTML = '';
+            filteredQuests.forEach(quest => {
+                const card = document.createElement('div');
+                card.className = `quest-card ${quest.isCompleted ? 'opacity-60' : ''}`;
+                card.innerHTML = `
+                    <div class="quest-card-content flex items-start">
+                        <div class="quest-card-icon-wrapper">
+                            <i class="${getQuestDisplayIconClass(quest.type)}"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-semibold text-white mb-1 ${quest.isCompleted ? 'line-through' : ''}">${quest.name}</h4>
+                            <p class="text-xs text-slate-400">XP: ${quest.xp}</p>
+                        </div>
+                    </div>
+                    <div class="quest-card-actions">
+                        <button class="action-button ${quest.isCompleted ? 'complete' : ''}" data-quest-id="${quest._id}" data-action="toggle">
+                            <i class="fas ${quest.isCompleted ? 'fa-undo' : 'fa-check'}"></i>
+                        </button>
+                        <button class="action-button delete" data-quest-id="${quest._id}" data-quest-name="${quest.name}" data-action="delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                questDisplayArea.appendChild(card);
+            });
+
+            questDisplayArea.querySelectorAll('.action-button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const id = event.currentTarget.dataset.questId;
+                    const action = event.currentTarget.dataset.action;
+                    if (action === 'toggle') handleToggleCompleteQuest(id);
+                    else if (action === 'delete') handleDeleteQuestPrompt(id, event.currentTarget.dataset.questName);
+                });
+            });
+        }
+        function getQuestDisplayIconClass(type) {
+            switch (type) {
+                case "daily": return "fas fa-leaf text-green-400";
+                case "main": return "fas fa-crown text-yellow-400";
+                case "side": return "fas fa-feather-alt text-sky-400";
+                default: return "fas fa-question-circle text-gray-400";
+            }
+        }
+
+        // --- MODAL & MISC UI ---
+        if (openAddQuestModalBtn) {
+            openAddQuestModalBtn.addEventListener('click', () => {
+                if (!accessToken) return;
+                questForm.reset(); 
+                questTypeModalInput.value = currentQuestFilter; 
+                addQuestModal.classList.remove('hidden');
+                addQuestModal.classList.add('flex');
+                openModalSound();
+            });
+        }
+        if (closeAddQuestModalBtn) {
+            closeAddQuestModalBtn.addEventListener('click', () => {
+                addQuestModal.classList.add('hidden');
+                addQuestModal.classList.remove('flex');
+                closeModalSound();
+            });
+        }
+        if (closeCompletionModalButton) {
+            closeCompletionModalButton.addEventListener('click', () => {
+                completionModal.classList.add('hidden');
+                completionModal.classList.remove('flex');
+                closeModalSound();
+            });
+        }
+        function showCompletionModal(message, isLevelUp = false, iconClass = 'fa-trophy text-yellow-400', title = 'Quest Selesai!') {
+            completionModalTitleEl.textContent = title;
+            completionMessageEl.textContent = message;
+            completionModalIconEl.className = `fas ${iconClass}`;
+            completionModal.classList.remove('hidden');
+            completionModal.classList.add('flex');
+            openModalSound();
+        }
+        document.querySelectorAll('.quest-type-nav-card').forEach(item => {
+            item.addEventListener('click', (event) => {
+                event.preventDefault();
+                document.querySelectorAll('.quest-type-nav-card').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                currentQuestFilter = item.dataset.questType;
+                currentQuestTypeTitleEl.textContent = `Daftar ${item.querySelector('span').textContent.trim()}`;
+                renderQuests();
+                playSound("C4", "16n");
+            });
+        });
+
+        // --- TIME & DAILY RESET ---
+        async function fetchCurrentTimeAndTriggerDailyResetIfNeeded() {
+            try {
+                const response = await fetch(timeApiUrl);
+                if (!response.ok) throw new Error(`Time API request failed: ${response.statusText}`);
+                const data = await response.json();
+                
+                const oldJakartaDate = currentJakartaDate;
+                currentJakartaDate = data.date; // "YYYY-MM-DD"
+                const timeString = new Date(data.dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
+                currentTimeDisplayEl.textContent = `WIB: ${timeString} | ${currentJakartaDate}`;
+
+                // Jika tanggal berubah ATAU ini adalah pemuatan pertama setelah login (oldJakartaDate null tapi accessToken ada)
+                // dan ada accessToken (user sudah login)
+                if (accessToken && (oldJakartaDate !== currentJakartaDate || (oldJakartaDate === null && currentJakartaDate !== null))) {
+                    console.log("Tanggal berubah atau login pertama hari ini. Memicu daily reset di backend...");
+                    try {
+                        const resetResult = await fetchAPI('/system/daily-reset', 'POST');
+                        console.log("Hasil daily reset dari backend:", resetResult);
+                        // Setelah reset, state user (streak) mungkin berubah, jadi fetch ulang
+                        await initializeUserSession(); // Ini akan fetch user state & quests
+                    } catch (resetError) {
+                        console.error("Gagal memicu daily reset di backend:", resetError);
+                        showCompletionModal(`Gagal melakukan reset harian: ${resetError.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching current time:", error);
+                currentTimeDisplayEl.textContent = "Gagal memuat waktu";
+                errorSound();
+                // Fallback sederhana jika API waktu gagal, tapi tidak akan memicu reset
+                const localDate = new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Jakarta'});
+                if (!currentJakartaDate) currentJakartaDate = localDate;
+            }
+        }
+
+
+        // --- INITIALIZATION ---
+        async functioninitializeApp() {
+            // Set UI awal untuk guest
+            resetUIForLogout(); 
+            
+            // Atur filter quest awal
+            const initialActiveNavItem = document.querySelector('.quest-type-nav-card[data-quest-type="daily"]');
+            if (initialActiveNavItem) {
+                initialActiveNavItem.classList.add('active');
+                currentQuestFilter = 'daily'; 
+                currentQuestTypeTitleEl.textContent = `Daftar ${initialActiveNavItem.querySelector('span').textContent.trim()}`;
+            }
+            currentQuestTypeTitleEl.classList.remove('hidden');
+
+            // Coba inisialisasi sesi jika ada token
+            if (accessToken) {
+                await initializeUserSession();
+            } else {
+                 // Jika tidak ada token, tetap fetch waktu untuk tampilan
+                await fetchCurrentTimeAndTriggerDailyResetIfNeeded();
+            }
+            // Fetch waktu secara berkala
+            setInterval(fetchCurrentTimeAndTriggerDailyResetIfNeeded, 60000 * 5); // Setiap 5 menit
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    </script>
+</body>
+</html>
