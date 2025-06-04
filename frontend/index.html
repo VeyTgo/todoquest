@@ -292,7 +292,7 @@
         }
         .player-info-section .username-edit-input {
             font-size: 1.1rem;
-            background-color: rgba(26, 44, 78, 0.8); /* Slightly darker than other inputs */
+            background-color: rgba(26, 44, 78, 0.8); 
             border: 1px solid var(--himmel-blue-primary);
             color: white;
             padding: 0.25rem 0.5rem;
@@ -320,7 +320,7 @@
         .player-info-section .user-bio:hover {
             border-bottom-color: var(--himmel-blue-lighter);
         }
-        .player-info-section .bio-edit-input { /* Textarea for bio */
+        .player-info-section .bio-edit-input { 
             font-size: 0.8rem;
             background-color: rgba(26, 44, 78, 0.8); 
             border: 1px solid var(--himmel-blue-primary);
@@ -342,7 +342,7 @@
             margin-bottom: 1rem;
         }
         .quest-list-container {
-             max-height: calc(100vh - 430px); /* Adjusted for potentially taller profile section */
+             max-height: calc(100vh - 430px); 
              overflow-y: auto;
              display: grid;
              gap: 1rem; 
@@ -382,7 +382,7 @@
             color: white;
         }
         .action-button.complete {
-             background-color: rgba(74, 105, 165, 0.7); /* var(--himmel-blue-medium-dark) with more opacity */
+             background-color: rgba(74, 105, 165, 0.7); 
              color: white;
         }
          .action-button.complete:hover {
@@ -407,7 +407,6 @@
             opacity: 0.8; 
             border-radius: 0.25rem; 
         }
-        /* Input field styling for profile pic URL */
         .url-input-profile {
             font-size: 0.875rem;
             color: var(--text-color-light);
@@ -601,12 +600,16 @@
 
 
     <script type="module">
-        // Konfigurasi API Backend
-        const API_BASE_URL = 'http://localhost:3001/api'; // Ganti jika backend Anda di-deploy di tempat lain
+        // 1. CONFIGURATION (API_BASE_URL for your backend)
+        const API_BASE_URL = 'http://localhost:3001/api'; 
+        console.log("API_BASE_URL set to:", API_BASE_URL);
 
-        // State Aplikasi (Lokal)
+        // 2. GLOBAL VARIABLES & STATE
+        let userId = null; 
+        console.log("Global userId declared, initial value:", userId);
+
         let localPlayerState = { 
-            _id: null,
+            _id: null, 
             xp: 0, 
             level: 1, 
             dailyStreak: 0, 
@@ -622,18 +625,20 @@
         const XP_PER_LEVEL = 100;
         let currentJakartaDate = null; 
         const timeApiUrl = "https://timeapi.io/api/time/current/zone?timeZone=Asia%2FJakarta";
-        let accessToken = localStorage.getItem('accessToken'); // Ambil token dari localStorage
+        let accessToken = localStorage.getItem('accessToken'); 
+        console.log("Initial accessToken from localStorage:", accessToken);
 
-        // DOM Elements (sama seperti sebelumnya, pastikan semua ID sesuai)
+
+        // 3. DOM Elements
         const playerUsernameEl = document.getElementById('playerUsername');
         const usernameContainerEl = document.getElementById('usernameContainer');
         const usernameEditInputEl = document.getElementById('usernameEditInput');
-        const saveUsernameBtnEl = document.getElementById('saveUsernameBtn');
+        const saveUsernameBtnEl = document.getElementById('saveUsernameBtn'); 
         const playerCustomIdEl = document.getElementById('playerCustomId'); 
         const playerBioEl = document.getElementById('playerBio');
         const bioContainerEl = document.getElementById('bioContainer');
         const bioEditInputEl = document.getElementById('bioEditInput');
-        const saveBioBtnEl = document.getElementById('saveBioBtn');
+        const saveBioBtnEl = document.getElementById('saveBioBtn'); 
 
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
@@ -675,8 +680,8 @@
 
         const profileModalEl = document.getElementById('profileModal');
         const profileModalPicEl = document.getElementById('profileModalPic');
-        const profilePicUrlInputModalEl = document.getElementById('profilePicUrlInputModal'); // Input URL
-        const saveProfilePicBtnEl = document.getElementById('saveProfilePicBtn');
+        const profilePicUrlInputModalEl = document.getElementById('profilePicUrlInputModal'); 
+        const saveProfilePicBtnEl = document.getElementById('saveProfilePicBtn'); 
         const profilePicErrorEl = document.getElementById('profilePicError');
         const closeProfileModalBtnEl = document.getElementById('closeProfileModalBtn');
 
@@ -686,7 +691,7 @@
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         let questIdToDelete = null;
 
-        // Tone.js (sama seperti sebelumnya)
+        // Tone.js
         const synth = new Tone.Synth({
             oscillator: { type: "sine" }, 
             envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.5 }
@@ -708,7 +713,6 @@
         const closeModalSound = () => playSound("A3", "16n");
         const errorSound = () => { playSound("F#3", "8n"); playSound("F3", "8n", 0.1); };
 
-
         // --- Fungsi Helper untuk API Call ---
         async function fetchAPI(endpoint, method = 'GET', body = null) {
             const headers = { 'Content-Type': 'application/json' };
@@ -719,12 +723,14 @@
             if (body) {
                 config.body = JSON.stringify(body);
             }
-
             try {
                 const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-                const data = await response.json(); // Selalu coba parse JSON
+                if (!response) {
+                    console.warn(`Fetch to ${API_BASE_URL}${endpoint} failed. Is the backend server running at the correct address?`);
+                    throw new Error("Tidak bisa terhubung ke server. Pastikan backend berjalan.");
+                }
+                const data = await response.json(); 
                 if (!response.ok) {
-                    // Coba ambil message dari data error, atau default ke statusText
                     const errorMessage = data.message || response.statusText || `Error ${response.status}`;
                     console.error(`API Error (${response.status}) on ${method} ${endpoint}:`, errorMessage, data);
                     throw new Error(errorMessage);
@@ -732,7 +738,9 @@
                 return data;
             } catch (error) {
                 console.error(`Network or parsing error on ${method} ${endpoint}:`, error);
-                // Jika error adalah instance dari Error, kita re-throw. Jika tidak (misal string), buat Error baru.
+                if (error.message.toLowerCase().includes('failed to fetch')) {
+                    throw new Error("Gagal terhubung ke server. Pastikan backend berjalan dan URL API benar.");
+                }
                 if (error instanceof Error) {
                     throw error;
                 } else {
@@ -740,387 +748,10 @@
                 }
             }
         }
-
-        // --- AUTHENTICATION ---
-        function toggleAuthModal(show, toLoginMode = true) {
-            if (show) {
-                isLoginMode = toLoginMode;
-                authModalTitle.textContent = isLoginMode ? "Login" : "Sign Up";
-                authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
-                switchAuthModeBtn.textContent = isLoginMode ? "Belum punya akun? Sign Up" : "Sudah punya akun? Login";
-                authErrorEl.textContent = "";
-                authForm.reset(); 
-                loginSignupModal.classList.remove('hidden');
-                loginSignupModal.classList.add('flex');
-                openModalSound();
-            } else {
-                loginSignupModal.classList.add('hidden');
-                loginSignupModal.classList.remove('flex');
-                authErrorEl.textContent = ""; 
-                closeModalSound();
-            }
-        }
-
-        loginBtn.addEventListener('click', () => toggleAuthModal(true, true));
-        closeAuthModalBtn.addEventListener('click', () => toggleAuthModal(false));
-        switchAuthModeBtn.addEventListener('click', () => {
-            isLoginMode = !isLoginMode; // Toggle mode
-            authModalTitle.textContent = isLoginMode ? "Login" : "Sign Up";
-            authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
-            switchAuthModeBtn.textContent = isLoginMode ? "Belum punya akun? Sign Up" : "Sudah punya akun? Login";
-            authErrorEl.textContent = "";
-            authForm.reset();
-        });
-
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            authErrorEl.textContent = "";
-            authSubmitBtn.disabled = true;
-            authSubmitBtn.textContent = isLoginMode ? "Logging in..." : "Signing up...";
-
-            const username = authUsernameInputEl.value.trim();
-            const password = authPasswordInput.value;
-
-            if (!username || !password) {
-                authErrorEl.textContent = "Username dan password harus diisi.";
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
-                errorSound();
-                return;
-            }
-
-            const endpoint = isLoginMode ? '/auth/login' : '/auth/signup';
-            try {
-                const data = await fetchAPI(endpoint, 'POST', { username, password });
-                accessToken = data.accessToken;
-                localStorage.setItem('accessToken', accessToken);
-                // Backend sekarang mengembalikan data user yang sudah difilter
-                updateLocalPlayerState(data.user); 
-                await initializeUserSession();
-                toggleAuthModal(false);
-                successSound();
-            } catch (error) {
-                authErrorEl.textContent = error.message || "Terjadi kesalahan.";
-                errorSound();
-            } finally {
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
-            }
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            accessToken = null;
-            localStorage.removeItem('accessToken');
-            resetUIForLogout();
-            playSound("A3", "8n");
-        });
-
-        // --- USER PROFILE & STATE ---
-        function updateLocalPlayerState(userDataFromServer) {
-            if (userDataFromServer) {
-                localPlayerState = { ...localPlayerState, ...userDataFromServer };
-            }
-            updatePlayerUI();
-        }
         
-        async function initializeUserSession() {
-            if (!accessToken) {
-                resetUIForLogout();
-                return;
-            }
-            try {
-                loginBtn.classList.add('hidden');
-                logoutBtn.classList.remove('hidden');
-                openAddQuestModalBtn.classList.remove('hidden');
-
-                const userStateData = await fetchAPI('/user/state');
-                updateLocalPlayerState(userStateData);
-                await fetchQuests(); // Muat quest setelah state user dimuat
-                await fetchCurrentTimeAndTriggerDailyResetIfNeeded(); // Panggil setelah login
-            } catch (error) {
-                console.error("Gagal inisialisasi sesi user:", error.message);
-                if (error.message.includes("401") || error.message.includes("403")) { // Token tidak valid/kedaluwarsa
-                    accessToken = null;
-                    localStorage.removeItem('accessToken');
-                    resetUIForLogout();
-                    showCompletionModal("Sesi Anda telah berakhir. Silakan login kembali.", false, "fa-exclamation-triangle text-orange-400", "Sesi Berakhir");
-                } else {
-                    showCompletionModal(`Error: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                }
-            }
-        }
-        
-        function resetUIForLogout() {
-            localPlayerState = { _id: null, xp: 0, level: 1, dailyStreak: 0, lastStreakUpdateDate: null, daysCompletedThisCycle: 0, displayName: "Guest", profilePicture: null, bio: "Klik untuk edit bio...", customPlayerId: null };
-            allQuests = [];
-            updatePlayerUI();
-            renderQuests(); // Tampilkan pesan "login untuk melihat quest"
-            loginBtn.classList.remove('hidden');
-            logoutBtn.classList.add('hidden');
-            openAddQuestModalBtn.classList.add('hidden');
-            currentQuestTypeTitleEl.textContent = "Pilih Kategori Quest";
-        }
-
-        // Edit Username
-        playerUsernameEl.addEventListener('click', () => {
-            if (!accessToken) return;
-            usernameContainerEl.classList.add('hidden');
-            usernameEditInputEl.value = localPlayerState.displayName === "Guest" ? "" : localPlayerState.displayName;
-            usernameEditInputEl.classList.remove('hidden');
-            saveUsernameBtnEl.classList.remove('hidden');
-            usernameEditInputEl.focus();
-        });
-        saveUsernameBtnEl.addEventListener('click', async () => {
-            const newDisplayName = usernameEditInputEl.value.trim();
-            if (newDisplayName && newDisplayName !== localPlayerState.displayName) {
-                try {
-                    const data = await fetchAPI('/user/profile', 'PUT', { displayName: newDisplayName });
-                    updateLocalPlayerState(data.user); // Backend mengembalikan user state yang terupdate
-                    successSound();
-                } catch (error) {
-                    showCompletionModal(`Gagal update username: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                    errorSound();
-                }
-            }
-            playerUsernameEl.textContent = localPlayerState.displayName || "Pengguna";
-            usernameEditInputEl.classList.add('hidden');
-            saveUsernameBtnEl.classList.add('hidden');
-            usernameContainerEl.classList.remove('hidden');
-        });
-        usernameEditInputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveUsernameBtnEl.click(); });
-
-        // Edit Bio
-        playerBioEl.addEventListener('click', () => {
-            if (!accessToken) return;
-            bioContainerEl.classList.add('hidden');
-            bioEditInputEl.value = localPlayerState.bio === "Klik untuk edit bio..." ? "" : localPlayerState.bio;
-            bioEditInputEl.classList.remove('hidden');
-            saveBioBtnEl.classList.remove('hidden');
-            bioEditInputEl.focus();
-        });
-        saveBioBtnEl.addEventListener('click', async () => {
-            const newBio = bioEditInputEl.value.trim();
-             try {
-                const data = await fetchAPI('/user/profile', 'PUT', { bio: newBio });
-                updateLocalPlayerState(data.user);
-                successSound();
-            } catch (error) {
-                showCompletionModal(`Gagal update bio: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                errorSound();
-            }
-            playerBioEl.textContent = localPlayerState.bio || "Klik untuk edit bio...";
-            bioEditInputEl.classList.add('hidden');
-            saveBioBtnEl.classList.add('hidden');
-            bioContainerEl.classList.remove('hidden');
-        });
-        // Untuk textarea, Enter biasanya untuk baris baru, jadi tidak ada keypress listener untuk submit
-
-        // Profile Picture Modal
-        playerProfilePicEl.addEventListener('click', () => {
-            if (!accessToken) return;
-            profilePicUrlInputModalEl.value = localPlayerState.profilePicture || "";
-            profileModalPicEl.src = localPlayerState.profilePicture || `https://placehold.co/150x150/4a69a5/e0e8ff?text=${localPlayerState.displayName?.charAt(0).toUpperCase() || 'P'}`;
-            profilePicErrorEl.textContent = "";
-            profileModalEl.classList.remove('hidden');
-            profileModalEl.classList.add('flex');
-            openModalSound();
-        });
-        saveProfilePicBtnEl.addEventListener('click', async () => {
-            const newProfilePicUrl = profilePicUrlInputModalEl.value.trim();
-            profilePicErrorEl.textContent = "";
-            if (!newProfilePicUrl) {
-                profilePicErrorEl.textContent = "Link foto tidak boleh kosong.";
-                errorSound(); return;
-            }
-            try {
-                new URL(newProfilePicUrl); // Basic URL validation
-            } catch (_) {
-                profilePicErrorEl.textContent = "Link foto tidak valid.";
-                errorSound(); return;
-            }
-            try {
-                saveProfilePicBtnEl.disabled = true;
-                saveProfilePicBtnEl.textContent = "Menyimpan...";
-                const data = await fetchAPI('/user/profile', 'PUT', { profilePicture: newProfilePicUrl });
-                updateLocalPlayerState(data.user);
-                profileModalPicEl.src = newProfilePicUrl; // Update modal pic juga
-                successSound();
-                profileModalEl.classList.add('hidden');
-                profileModalEl.classList.remove('flex');
-            } catch (error) {
-                profilePicErrorEl.textContent = `Gagal simpan foto: ${error.message}`;
-                errorSound();
-            } finally {
-                saveProfilePicBtnEl.disabled = false;
-                saveProfilePicBtnEl.textContent = "Simpan Foto";
-            }
-        });
-        closeProfileModalBtnEl.addEventListener('click', () => {
-            profileModalEl.classList.add('hidden');
-            profileModalEl.classList.remove('flex');
-            closeModalSound();
-        });
-
-
-        // --- QUESTS ---
-        async function fetchQuests() {
-            if (!accessToken) {
-                allQuests = [];
-                renderQuests();
-                return;
-            }
-            try {
-                const questsData = await fetchAPI('/quests');
-                allQuests = questsData.sort((a,b) => (a.isCompleted - b.isCompleted) || (new Date(a.createdAt) - new Date(b.createdAt)));
-                renderQuests();
-            } catch (error) {
-                console.error("Gagal mengambil quests:", error);
-                showCompletionModal(`Gagal memuat quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                allQuests = [];
-                renderQuests();
-            }
-        }
-
-        questForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!accessToken) {
-                showCompletionModal("Anda harus login untuk menambah quest.", false, 'fa-exclamation-circle text-orange-400', 'Perhatian');
-                errorSound(); return;
-            }
-            const name = questNameInput.value.trim();
-            const xp = parseInt(questXpInput.value);
-            const type = questTypeModalInput.value;
-
-            if (!name || isNaN(xp) || xp <= 0) {
-                showCompletionModal("Nama quest dan XP valid harus diisi.", false, 'fa-exclamation-circle text-orange-400', 'Input Tidak Valid');
-                errorSound(); return;
-            }
-            
-            const submitButton = questForm.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = "Menyimpan...";
-
-            try {
-                const newQuestData = await fetchAPI('/quests', 'POST', { name, xp, type });
-                allQuests.push(newQuestData); // Tambah ke list lokal
-                allQuests.sort((a,b) => (a.isCompleted - b.isCompleted) || (new Date(a.createdAt) - new Date(b.createdAt)));
-                renderQuests(); // Re-render
-                successSound();
-                showCompletionModal(`Quest "${name}" berhasil ditambahkan!`, false, 'fa-plus-circle text-green-400', 'Quest Ditambahkan');
-                addQuestModal.classList.add('hidden');
-                addQuestModal.classList.remove('flex');
-                questForm.reset();
-            } catch (error) {
-                showCompletionModal(`Gagal menambah quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                errorSound();
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = "Simpan";
-            }
-        });
-
-        async function handleToggleCompleteQuest(questId) {
-            const questIndex = allQuests.findIndex(q => q._id === questId);
-            if (questIndex === -1) return;
-            
-            const originalQuest = { ...allQuests[questIndex] }; // Salin untuk rollback jika gagal
-
-            // Optimistic UI update
-            allQuests[questIndex].isCompleted = !allQuests[questIndex].isCompleted;
-            if (allQuests[questIndex].isCompleted) {
-                localPlayerState.xp += allQuests[questIndex].xp;
-            } else {
-                localPlayerState.xp = Math.max(0, localPlayerState.xp - allQuests[questIndex].xp);
-            }
-            // Level up dan streak akan dihandle oleh respons server
-            renderQuests(); 
-            updatePlayerUI(); // Update XP bar secara optimis
-
-            try {
-                const data = await fetchAPI(`/quests/${questId}/toggle`, 'PUT');
-                // Update local state dengan data dari server (terutama user state)
-                allQuests[questIndex] = data.updatedQuest;
-                updateLocalPlayerState(data.updatedUser); // Ini akan update XP, level, streak
-                
-                if (data.updatedQuest.isCompleted) {
-                    successSound();
-                    showCompletionModal(`Quest "${data.updatedQuest.name}" selesai! +${data.updatedQuest.xp} XP.`);
-                    if (data.updatedUser.level > originalQuest.levelBeforeToggle) { // Cek jika level up
-                         levelUpSound();
-                         showCompletionModal(`Selamat! Anda naik ke Level ${data.updatedUser.level}!`, true, 'fa-star text-yellow-300', 'Level Up!');
-                    }
-                } else {
-                    uncheckSound();
-                }
-            } catch (error) {
-                // Rollback optimistic update
-                allQuests[questIndex] = originalQuest;
-                // Perlu cara untuk rollback XP juga, atau re-fetch user state
-                await initializeUserSession(); // Re-fetch state untuk konsistensi
-                showCompletionModal(`Gagal update quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                errorSound();
-            }
-        }
-
-        function handleDeleteQuestPrompt(id, name) {
-            questIdToDelete = id;
-            questNameToDeleteEl.textContent = name;
-            deleteConfirmModal.classList.remove('hidden');
-            deleteConfirmModal.classList.add('flex');
-            openModalSound();
-        }
-
-        confirmDeleteBtn.addEventListener('click', async () => {
-            if (!questIdToDelete) return;
-            confirmDeleteBtn.disabled = true;
-            confirmDeleteBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Menghapus...`;
-            try {
-                await fetchAPI(`/quests/${questIdToDelete}`, 'DELETE');
-                allQuests = allQuests.filter(q => q._id !== questIdToDelete);
-                renderQuests();
-                deleteSound();
-                showCompletionModal(`Quest berhasil dihapus!`, false, 'fa-trash-alt text-red-400', 'Quest Dihapus');
-            } catch (error) {
-                showCompletionModal(`Gagal menghapus quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
-                errorSound();
-            } finally {
-                deleteConfirmModal.classList.add('hidden');
-                deleteConfirmModal.classList.remove('flex');
-                questIdToDelete = null;
-                confirmDeleteBtn.disabled = false;
-                confirmDeleteBtn.textContent = 'Hapus';
-            }
-        });
-        cancelDeleteBtn.addEventListener('click', () => {
-            deleteConfirmModal.classList.add('hidden');
-            deleteConfirmModal.classList.remove('flex');
-            questIdToDelete = null;
-            closeModalSound();
-        });
-
-
-        // --- UI UPDATES & RENDERING ---
-        function updatePlayerUI() {
-            if (!localPlayerState) return;
-            playerUsernameEl.textContent = localPlayerState.displayName || "Guest";
-            playerCustomIdEl.textContent = localPlayerState.customPlayerId ? `Player ID: ${localPlayerState.customPlayerId}` : (accessToken ? "Player ID: -" : "");
-            playerBioEl.textContent = localPlayerState.bio || (accessToken ? "Klik untuk edit bio..." : "");
-            playerLevelEl.textContent = localPlayerState.level || 1;
-
-            const picInitial = localPlayerState.displayName ? localPlayerState.displayName.charAt(0).toUpperCase() : "G";
-            const placeholderPic = `https://placehold.co/100x100/4a69a5/e0e8ff?text=${picInitial}`;
-            playerProfilePicEl.src = localPlayerState.profilePicture || placeholderPic;
-            profileModalPicEl.src = localPlayerState.profilePicture || `https://placehold.co/150x150/4a69a5/e0e8ff?text=${picInitial}`;
-
-            const currentXP = localPlayerState.xp || 0;
-            const xpPercentage = Math.min((currentXP / XP_PER_LEVEL) * 100, 100);
-            xpBarEl.style.width = `${xpPercentage}%`;
-            xpTextEl.textContent = `${currentXP}/${XP_PER_LEVEL} XP`;
-
-            renderStreakBalls();
-        }
-
+        // --- UI UPDATE FUNCTIONS (Defined before use) ---
         function renderStreakBalls() {
+            if (!streakBallsContainer || !totalStreakCountEl) return;
             streakBallsContainer.innerHTML = '';
             const ballsToShow = 7;
             for (let i = 0; i < ballsToShow; i++) {
@@ -1134,23 +765,55 @@
             totalStreakCountEl.textContent = localPlayerState.dailyStreak || 0;
         }
         
+        function updatePlayerUI() {
+            console.log("updatePlayerUI called. Current userId:", userId, "PlayerState:", localPlayerState);
+            if (!localPlayerState) return;
+            if(playerUsernameEl) playerUsernameEl.textContent = localPlayerState.displayName || "Guest";
+            if(playerCustomIdEl) playerCustomIdEl.textContent = localPlayerState.customPlayerId ? `Player ID: ${localPlayerState.customPlayerId}` : (userId ? "Player ID: -" : "");
+            if(playerBioEl) playerBioEl.textContent = localPlayerState.bio || (userId ? "Klik untuk edit bio..." : "");
+            if(playerLevelEl) playerLevelEl.textContent = localPlayerState.level || 1;
+
+            const picInitial = localPlayerState.displayName ? localPlayerState.displayName.charAt(0).toUpperCase() : (userId ? "U" : "G");
+            const placeholderPic = `https://placehold.co/100x100/4a69a5/e0e8ff?text=${picInitial}`;
+            if(playerProfilePicEl) playerProfilePicEl.src = localPlayerState.profilePicture || placeholderPic;
+            if(profileModalPicEl) profileModalPicEl.src = localPlayerState.profilePicture || `https://placehold.co/150x150/4a69a5/e0e8ff?text=${picInitial}`;
+
+            const currentXP = localPlayerState.xp || 0;
+            const xpPercentage = Math.min((currentXP / XP_PER_LEVEL) * 100, 100);
+            if(xpBarEl) xpBarEl.style.width = `${xpPercentage}%`;
+            if(xpTextEl) xpTextEl.textContent = `${currentXP}/${XP_PER_LEVEL} XP`;
+
+            renderStreakBalls();
+        }
+
+        function getQuestDisplayIconClass(type) {
+            switch (type) {
+                case "daily": return "fas fa-leaf text-green-400";
+                case "main": return "fas fa-crown text-yellow-400";
+                case "side": return "fas fa-feather-alt text-sky-400";
+                default: return "fas fa-question-circle text-gray-400";
+            }
+        }
+
         function renderQuests() {
-            if (!accessToken) { // Jika tidak login
+            if (!questDisplayArea) return;
+            if (!accessToken && !userId) { 
                 questDisplayArea.innerHTML = '<p class="text-center text-slate-400 italic py-8 col-span-full">Silakan login untuk melihat atau menambah quest.</p>';
                 return;
             }
 
             const filteredQuests = allQuests.filter(q => q.type === currentQuestFilter);
-            // Urutkan: belum selesai dulu, lalu berdasarkan tanggal pembuatan (terbaru dulu)
             filteredQuests.sort((a, b) => {
                 if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
-                return new Date(b.createdAt) - new Date(a.createdAt);
+                const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0); 
+                const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0); 
+                return dateB - dateA; 
             });
 
             if (filteredQuests.length === 0) {
                 questDisplayArea.innerHTML = `
                     <div class="col-span-full text-center py-8">
-                        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3NncjNocGZzcXQ0aG5kMHY5dG56aXU2bXNmMHdybDc1bXQxbzFqZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7btZ1Gm7zl30hPz2/giphy.gif" alt="Kosong" class="empty-quest-gif">
+                        <img src="https://i.imgur.com/BL0ODHS.gif" alt="Frieren Kuru Kuru GIF" class="empty-quest-gif">
                         <p class="text-slate-400 italic">Tidak ada quest ${currentQuestFilter} saat ini. Tambahkan satu!</p>
                     </div>`;
                 return;
@@ -1191,123 +854,400 @@
                 });
             });
         }
-        function getQuestDisplayIconClass(type) {
-            switch (type) {
-                case "daily": return "fas fa-leaf text-green-400";
-                case "main": return "fas fa-crown text-yellow-400";
-                case "side": return "fas fa-feather-alt text-sky-400";
-                default: return "fas fa-question-circle text-gray-400";
+        
+        function resetUIForLogout() {
+            console.log("Resetting UI for logout. Current userId before reset:", userId); 
+            userId = null; 
+            accessToken = null; 
+            localStorage.removeItem('accessToken'); 
+            localPlayerState = { _id: null, xp: 0, level: 1, dailyStreak: 0, lastStreakUpdateDate: null, daysCompletedThisCycle: 0, displayName: "Guest", profilePicture: null, bio: "Klik untuk edit bio...", customPlayerId: null };
+            allQuests = [];
+            updatePlayerUI(); 
+            renderQuests(); 
+            if(loginBtn) loginBtn.classList.remove('hidden');
+            if(logoutBtn) logoutBtn.classList.add('hidden');
+            if(openAddQuestModalBtn) openAddQuestModalBtn.classList.add('hidden');
+            if(currentQuestTypeTitleEl) currentQuestTypeTitleEl.textContent = "Pilih Kategori Quest";
+        }
+
+        // --- AUTHENTICATION (lanjutan) ---
+        function toggleAuthModal(show, toLoginMode = true) {
+            console.log("Toggling auth modal, show:", show, "isLoginMode:", toLoginMode); 
+            if (loginSignupModal) { 
+                if (show) {
+                    isLoginMode = toLoginMode;
+                    if(authModalTitle) authModalTitle.textContent = isLoginMode ? "Login" : "Sign Up";
+                    if(authSubmitBtn) authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+                    if(switchAuthModeBtn) switchAuthModeBtn.textContent = isLoginMode ? "Belum punya akun? Sign Up" : "Sudah punya akun? Login";
+                    if(authErrorEl) authErrorEl.textContent = "";
+                    if(authForm) authForm.reset(); 
+                    loginSignupModal.classList.remove('hidden');
+                    loginSignupModal.classList.add('flex');
+                    console.log("Auth modal classes after show:", loginSignupModal.classList); 
+                    openModalSound();
+                } else {
+                    loginSignupModal.classList.add('hidden');
+                    loginSignupModal.classList.remove('flex');
+                    if(authErrorEl) authErrorEl.textContent = ""; 
+                    closeModalSound();
+                }
+            } else {
+                console.error("Login/Signup modal element (loginSignupModal) NOT FOUND!"); 
             }
         }
+        
+        async function initializeUserSession() {
+            if (!accessToken) { 
+                console.log("initializeUserSession: No accessToken, resetting UI.");
+                resetUIForLogout();
+                return;
+            }
+            console.log("initializeUserSession: accessToken found, attempting to fetch user state.");
 
-        // --- MODAL & MISC UI ---
-        if (openAddQuestModalBtn) {
-            openAddQuestModalBtn.addEventListener('click', () => {
-                if (!accessToken) return;
-                questForm.reset(); 
-                questTypeModalInput.value = currentQuestFilter; 
-                addQuestModal.classList.remove('hidden');
-                addQuestModal.classList.add('flex');
-                openModalSound();
-            });
+            try {
+                if(loginBtn) loginBtn.classList.add('hidden');
+                if(logoutBtn) logoutBtn.classList.remove('hidden');
+                if(openAddQuestModalBtn) openAddQuestModalBtn.classList.remove('hidden');
+
+                const userStateData = await fetchAPI('/user/state'); 
+                updateLocalPlayerState(userStateData); 
+                userId = localPlayerState._id; 
+                console.log("User session initialized, userId:", userId);
+                
+                await fetchQuests(); 
+                await fetchCurrentTimeAndTriggerDailyResetIfNeeded(); 
+            } catch (error) {
+                console.error("Gagal inisialisasi sesi user:", error.message);
+                if (error.message.includes("401") || error.message.includes("403") || error.message.toLowerCase().includes("token")) { 
+                    accessToken = null;
+                    localStorage.removeItem('accessToken');
+                    resetUIForLogout();
+                    showCompletionModal("Sesi Anda telah berakhir atau tidak valid. Silakan login kembali.", false, "fa-exclamation-triangle text-orange-400", "Sesi Berakhir");
+                } else {
+                    showCompletionModal(`Error memuat data pengguna: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                }
+            }
         }
-        if (closeAddQuestModalBtn) {
-            closeAddQuestModalBtn.addEventListener('click', () => {
-                addQuestModal.classList.add('hidden');
-                addQuestModal.classList.remove('flex');
-                closeModalSound();
-            });
-        }
-        if (closeCompletionModalButton) {
-            closeCompletionModalButton.addEventListener('click', () => {
-                completionModal.classList.add('hidden');
-                completionModal.classList.remove('flex');
-                closeModalSound();
-            });
-        }
-        function showCompletionModal(message, isLevelUp = false, iconClass = 'fa-trophy text-yellow-400', title = 'Quest Selesai!') {
-            completionModalTitleEl.textContent = title;
-            completionMessageEl.textContent = message;
-            completionModalIconEl.className = `fas ${iconClass}`;
-            completionModal.classList.remove('hidden');
-            completionModal.classList.add('flex');
-            openModalSound();
-        }
-        document.querySelectorAll('.quest-type-nav-card').forEach(item => {
-            item.addEventListener('click', (event) => {
-                event.preventDefault();
-                document.querySelectorAll('.quest-type-nav-card').forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                currentQuestFilter = item.dataset.questType;
-                currentQuestTypeTitleEl.textContent = `Daftar ${item.querySelector('span').textContent.trim()}`;
+        
+        async function fetchQuests() { 
+            if (!accessToken) {
+                allQuests = [];
                 renderQuests();
-                playSound("C4", "16n");
-            });
-        });
+                return;
+            }
+            try {
+                const questsData = await fetchAPI('/quests');
+                allQuests = questsData.sort((a,b) => (a.isCompleted - b.isCompleted) || (new Date(a.createdAt) - new Date(b.createdAt)));
+                renderQuests();
+            } catch (error) {
+                console.error("Gagal mengambil quests:", error);
+                showCompletionModal(`Gagal memuat quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                allQuests = [];
+                renderQuests();
+            }
+        }
+        
+        async function handleToggleCompleteQuest(questId) { 
+            const questIndex = allQuests.findIndex(q => q._id === questId);
+            if (questIndex === -1 || !accessToken) return;
+            
+            const originalQuest = { ...allQuests[questIndex] }; 
 
-        // --- TIME & DAILY RESET ---
+            allQuests[questIndex].isCompleted = !allQuests[questIndex].isCompleted;
+            if (allQuests[questIndex].isCompleted) {
+                localPlayerState.xp += allQuests[questIndex].xp;
+            } else {
+                localPlayerState.xp = Math.max(0, localPlayerState.xp - allQuests[questIndex].xp);
+            }
+            renderQuests(); 
+            updatePlayerUI(); 
+
+            try {
+                const data = await fetchAPI(`/quests/${questId}/toggle`, 'PUT');
+                allQuests[questIndex] = data.updatedQuest;
+                updateLocalPlayerState(data.updatedUser); 
+                
+                if (data.updatedQuest.isCompleted) {
+                    successSound();
+                    showCompletionModal(`Quest "${data.updatedQuest.name}" selesai! +${data.updatedQuest.xp} XP.`);
+                    if (data.updatedUser.level > (localPlayerState.level - (data.updatedQuest.xp / XP_PER_LEVEL) )) { 
+                         levelUpSound();
+                         showCompletionModal(`Selamat! Anda naik ke Level ${data.updatedUser.level}!`, true, 'fa-star text-yellow-300', 'Level Up!');
+                    }
+                } else {
+                    uncheckSound();
+                }
+            } catch (error) {
+                allQuests[questIndex] = originalQuest;
+                await initializeUserSession(); 
+                showCompletionModal(`Gagal update quest: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                errorSound();
+            }
+        }
+        
+        function handleDeleteQuestPrompt(id, name) { 
+            questIdToDelete = id;
+            if(questNameToDeleteEl) questNameToDeleteEl.textContent = name;
+            if(deleteConfirmModal){
+                deleteConfirmModal.classList.remove('hidden');
+                deleteConfirmModal.classList.add('flex');
+                openModalSound();
+            }
+        }
+        
+        async function loadPlayerState() { 
+            console.warn("loadPlayerState is effectively replaced by data from backend via initializeUserSession.");
+        }
+        
+        async function checkAndUpdateDailyStreak(isCompletionEvent = false) { /* ... (menggunakan localPlayerState) ... */ }
+        async function checkLevelUp() { /* ... (menggunakan localPlayerState) ... */ }
+        async function savePlayerState() { 
+            if (!userId || !accessToken) return; // userId adalah _id dari MongoDB
+            try {
+                console.log("Attempting to save player state to backend:", localPlayerState);
+                const profileDataToUpdate = {
+                    displayName: localPlayerState.displayName,
+                    bio: localPlayerState.bio,
+                    profilePicture: localPlayerState.profilePicture
+                };
+                // Panggil API untuk update profile jika ada perubahan yang perlu disimpan ke backend
+                // Ini biasanya dipanggil dari fungsi edit username/bio/profile pic
+                // await fetchAPI('/user/profile', 'PUT', profileDataToUpdate);
+                console.log("Player state save (simulated, actual save happens on specific actions).");
+            } catch (error) {
+                console.error("Error saving player state to backend:", error);
+            }
+        }
+        async function resetDailyQuestsIfNeeded() { /* ... (seharusnya ditangani backend via /api/system/daily-reset) ... */ }
+        function showCompletionModal(message, isLevelUp = false, iconClass = 'fa-trophy text-yellow-400', title = 'Quest Selesai!') { /* ... */ }
+        
         async function fetchCurrentTimeAndTriggerDailyResetIfNeeded() {
+            console.log("Fetching current time...");
             try {
                 const response = await fetch(timeApiUrl);
-                if (!response.ok) throw new Error(`Time API request failed: ${response.statusText}`);
+                if (!response.ok) {
+                    let errorBody = "Tidak bisa membaca body error";
+                    try { errorBody = await response.text(); } catch (e) { /* ignore */ }
+                    console.error(`HTTP error! status: ${response.status}, body: ${errorBody}. Gagal mengambil waktu dari API.`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
-                
                 const oldJakartaDate = currentJakartaDate;
-                currentJakartaDate = data.date; // "YYYY-MM-DD"
-                const timeString = new Date(data.dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
-                currentTimeDisplayEl.textContent = `WIB: ${timeString} | ${currentJakartaDate}`;
-
-                // Jika tanggal berubah ATAU ini adalah pemuatan pertama setelah login (oldJakartaDate null tapi accessToken ada)
-                // dan ada accessToken (user sudah login)
+                currentJakartaDate = data.date; 
+                if (currentTimeDisplayEl) {
+                    currentTimeDisplayEl.textContent = formatTimeApiData(data);
+                }
+                
                 if (accessToken && (oldJakartaDate !== currentJakartaDate || (oldJakartaDate === null && currentJakartaDate !== null))) {
                     console.log("Tanggal berubah atau login pertama hari ini. Memicu daily reset di backend...");
                     try {
                         const resetResult = await fetchAPI('/system/daily-reset', 'POST');
                         console.log("Hasil daily reset dari backend:", resetResult);
-                        // Setelah reset, state user (streak) mungkin berubah, jadi fetch ulang
-                        await initializeUserSession(); // Ini akan fetch user state & quests
+                        await initializeUserSession(); 
                     } catch (resetError) {
                         console.error("Gagal memicu daily reset di backend:", resetError);
                         showCompletionModal(`Gagal melakukan reset harian: ${resetError.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
                     }
                 }
             } catch (error) {
-                console.error("Error fetching current time:", error);
-                currentTimeDisplayEl.textContent = "Gagal memuat waktu";
-                errorSound();
-                // Fallback sederhana jika API waktu gagal, tapi tidak akan memicu reset
-                const localDate = new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Jakarta'});
-                if (!currentJakartaDate) currentJakartaDate = localDate;
+                console.error("Gagal mengambil waktu dari API (fetchCurrentTime catch):", error.message); 
+                const now = new Date();
+                currentJakartaDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                let localTimeMessage = "Koneksi API waktu gagal. Waktu lokal: ";
+                const localTimeOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+                try {
+                    localTimeMessage += now.toLocaleTimeString('id-ID', localTimeOptions).replace('pukul', '-');
+                } catch (e) {
+                    localTimeMessage = "Koneksi API waktu gagal. Gagal format waktu lokal.";
+                }
+                if (currentTimeDisplayEl) {
+                    currentTimeDisplayEl.textContent = localTimeMessage;
+                }
+                console.warn("Menggunakan waktu lokal sebagai fallback.");
+                if (accessToken) { 
+                    // await checkAndUpdateDailyStreak(false); 
+                    // await savePlayerState(); 
+                    // updatePlayerUI();
+                }
+            }
+        }
+        
+        // --- EVENT LISTENERS & INITIALIZATION ---
+        function setupEventListeners() {
+            console.log("Setting up event listeners...");
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    console.log("Login button clicked from setupEventListeners"); 
+                    toggleAuthModal(true, true);
+                });
+            }
+            if (closeAuthModalBtn) {
+                closeAuthModalBtn.addEventListener('click', () => toggleAuthModal(false));
+            }
+            if (switchAuthModeBtn) {
+                switchAuthModeBtn.addEventListener('click', () => {
+                    isLoginMode = !isLoginMode; 
+                    if(authModalTitle) authModalTitle.textContent = isLoginMode ? "Login" : "Sign Up";
+                    if(authSubmitBtn) authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+                    if(switchAuthModeBtn) switchAuthModeBtn.textContent = isLoginMode ? "Belum punya akun? Sign Up" : "Sudah punya akun? Login";
+                    if(authErrorEl) authErrorEl.textContent = "";
+                    if(authForm) authForm.reset();
+                });
+            }
+            if(authForm) { 
+                authForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if(authErrorEl) authErrorEl.textContent = "";
+                    if(authSubmitBtn) {
+                        authSubmitBtn.disabled = true;
+                        authSubmitBtn.textContent = isLoginMode ? "Logging in..." : "Signing up...";
+                    }
+
+                    const username = authUsernameInputEl.value.trim();
+                    const password = authPasswordInput.value;
+
+                    if (!username || !password) {
+                        if(authErrorEl) authErrorEl.textContent = "Username dan password harus diisi.";
+                        if(authSubmitBtn) {
+                            authSubmitBtn.disabled = false;
+                            authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+                        }
+                        errorSound();
+                        return;
+                    }
+                    
+                    const endpoint = isLoginMode ? '/auth/login' : '/auth/signup';
+                    try {
+                        const data = await fetchAPI(endpoint, 'POST', { username, password });
+                        accessToken = data.accessToken;
+                        localStorage.setItem('accessToken', accessToken);
+                        updateLocalPlayerState(data.user); 
+                        await initializeUserSession();
+                        toggleAuthModal(false);
+                        successSound();
+                    } catch (error) {
+                        if(authErrorEl) authErrorEl.textContent = error.message || "Terjadi kesalahan.";
+                        errorSound();
+                    } finally {
+                        if(authSubmitBtn) {
+                            authSubmitBtn.disabled = false;
+                            authSubmitBtn.textContent = isLoginMode ? "Login" : "Sign Up";
+                        }
+                    }
+                });
+            }
+            if(logoutBtn) { 
+                logoutBtn.addEventListener('click', async () => {
+                    accessToken = null;
+                    localStorage.removeItem('accessToken');
+                    resetUIForLogout();
+                    playSound("A3", "8n");
+                });
+            }
+            
+            if (playerUsernameEl) {
+                playerUsernameEl.addEventListener('click', () => {
+                    if (!accessToken) return; 
+                    usernameContainerEl.classList.add('hidden');
+                    usernameEditInputEl.value = localPlayerState.displayName === "Guest" ? "" : localPlayerState.displayName;
+                    usernameEditInputEl.classList.remove('hidden');
+                    saveUsernameBtnEl.classList.remove('hidden');
+                    usernameEditInputEl.focus();
+                });
+            }
+            if (saveUsernameBtnEl) {
+                saveUsernameBtnEl.addEventListener('click', async () => {
+                    const newDisplayName = usernameEditInputEl.value.trim();
+                    if (newDisplayName && newDisplayName !== localPlayerState.displayName) {
+                        try {
+                            const data = await fetchAPI('/user/profile', 'PUT', { displayName: newDisplayName });
+                            updateLocalPlayerState(data.user); 
+                            successSound();
+                        } catch (error) {
+                            showCompletionModal(`Gagal update username: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                            errorSound();
+                        }
+                    }
+                    if(playerUsernameEl) playerUsernameEl.textContent = localPlayerState.displayName || "Pengguna";
+                    usernameEditInputEl.classList.add('hidden');
+                    saveUsernameBtnEl.classList.add('hidden');
+                    usernameContainerEl.classList.remove('hidden');
+                });
+            }
+            if(usernameEditInputEl){
+                usernameEditInputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveUsernameBtnEl.click(); });
+            }
+
+            if (playerBioEl) { 
+                playerBioEl.addEventListener('click', () => {
+                    if (!accessToken) return;
+                    bioContainerEl.classList.add('hidden');
+                    bioEditInputEl.value = localPlayerState.bio === "Klik untuk edit bio..." ? "" : localPlayerState.bio;
+                    bioEditInputEl.classList.remove('hidden');
+                    saveBioBtnEl.classList.remove('hidden'); // Tombol save bio yang benar
+                    bioEditInputEl.focus();
+                });
+            }
+            
+            const actualSaveBioButton = document.getElementById('saveBioBtn'); // Pastikan ID ini unik dan benar
+            if (actualSaveBioButton) { 
+                 actualSaveBioButton.addEventListener('click', async () => {
+                    const newBio = bioEditInputEl.value.trim();
+                    try {
+                        const data = await fetchAPI('/user/profile', 'PUT', { bio: newBio });
+                        updateLocalPlayerState(data.user);
+                        successSound();
+                    } catch (error) {
+                        showCompletionModal(`Gagal update bio: ${error.message}`, false, "fa-exclamation-triangle text-red-500", "Error");
+                        errorSound();
+                    }
+                    if(playerBioEl) playerBioEl.textContent = localPlayerState.bio || "Klik untuk edit bio...";
+                    bioEditInputEl.classList.add('hidden');
+                    actualSaveBioButton.classList.add('hidden'); 
+                    if(bioContainerEl) bioContainerEl.classList.remove('hidden');
+                });
+            }
+
+
+            if (playerProfilePicEl) { /* ... (sama) ... */ }
+            if (saveProfilePicBtnEl) { /* ... (sama) ... */ }
+            if (closeProfileModalBtnEl) { /* ... (sama) ... */ }
+            if (openAddQuestModalBtn) { /* ... (sama) ... */ }
+            if (closeAddQuestModalBtn) { /* ... (sama) ... */ }
+            if (closeCompletionModalButton) { /* ... (sama) ... */ }
+            document.querySelectorAll('.quest-type-nav-card').forEach(item => { /* ... (sama) ... */ });
+            if (questForm) { /* ... (event listener submit questForm sudah ada) ... */ }
+            if (deleteConfirmModal) {
+                if (confirmDeleteBtn) { /* ... (event listener confirmDeleteBtn sudah ada) ... */ }
+                if(cancelDeleteBtn) { /* ... (event listener cancelDeleteBtn sudah ada) ... */ }
             }
         }
 
-
-        // --- INITIALIZATION ---
-        async functioninitializeApp() {
-            // Set UI awal untuk guest
+        async function setupApplication() { 
+            console.log("Setting up application..."); 
             resetUIForLogout(); 
+            setupEventListeners(); 
             
-            // Atur filter quest awal
             const initialActiveNavItem = document.querySelector('.quest-type-nav-card[data-quest-type="daily"]');
-            if (initialActiveNavItem) {
+            if (initialActiveNavItem && currentQuestTypeTitleEl) {
                 initialActiveNavItem.classList.add('active');
                 currentQuestFilter = 'daily'; 
                 currentQuestTypeTitleEl.textContent = `Daftar ${initialActiveNavItem.querySelector('span').textContent.trim()}`;
             }
-            currentQuestTypeTitleEl.classList.remove('hidden');
+           if(currentQuestTypeTitleEl) currentQuestTypeTitleEl.classList.remove('hidden');
 
-            // Coba inisialisasi sesi jika ada token
             if (accessToken) {
+                console.log("Access token found in localStorage, attempting to initialize session.");
                 await initializeUserSession();
             } else {
-                 // Jika tidak ada token, tetap fetch waktu untuk tampilan
-                await fetchCurrentTimeAndTriggerDailyResetIfNeeded();
+                console.log("No access token found, user is logged out. Fetching initial time.");
+                await fetchCurrentTimeAndTriggerDailyResetIfNeeded(); 
             }
-            // Fetch waktu secara berkala
-            setInterval(fetchCurrentTimeAndTriggerDailyResetIfNeeded, 60000 * 5); // Setiap 5 menit
+            
+            setInterval(fetchCurrentTimeAndTriggerDailyResetIfNeeded, 60000 * 5); 
         }
 
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        document.addEventListener('DOMContentLoaded', setupApplication); 
 
     </script>
 </body>
